@@ -97,7 +97,7 @@ public class GameService {
         boolean juegoGanado = palabraOcultaActual.equals(palabraSecreta);
         boolean juegoPerdido = gameInProgress.getIntentosRestantes() <= 0;
 
-        // Si el juego terminó...
+        // Si el juego terminó
         if (juegoGanado || juegoPerdido) {
             int puntaje = calculateScore(palabraSecreta, letrasIntentadas, juegoGanado, gameInProgress.getIntentosRestantes());
             saveGame(gameInProgress.getJugador(), gameInProgress.getPalabra(), juegoGanado, puntaje);

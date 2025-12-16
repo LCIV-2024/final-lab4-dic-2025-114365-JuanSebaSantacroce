@@ -17,10 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,8 +52,31 @@ class GameServiceTest {
 
     @Test
     void testStartGame_Success() {
-        // TODO: Implementar el test para testStartGame_Success
-        
+
+        when(playerRepository.findById(1L)).thenReturn(Optional.of(player));
+        when(gameInProgressRepository.findByJugadorIdOrderByFechaInicioDesc(1L)).thenReturn(
+                Collections.emptyList());
+        when(wordRepository.findRandomWord()).thenReturn(Optional.of(word));
+        when(gameInProgressRepository.save(any(GameInProgress.class))).thenAnswer(invocation -> {
+            GameInProgress savedGame = invocation.getArgument(0);
+            savedGame.setId(1L);
+            return savedGame;
+        });
+        when(wordRepository.save(any(Word.class))).thenAnswer(invocation -> invocation.getArgument(0)); // Mock saving the word
+
+        GameResponseDTO result = gameService.startGame(1L);
+
+        assertNotNull(result);
+        assertEquals("___________", result.getPalabraOculta());
+        assertEquals(7, result.getIntentosRestantes());
+        assertTrue(result.getLetrasIntentadas().isEmpty());
+
+        verify(playerRepository, times(1)).findById(1L);
+        verify(gameInProgressRepository, times(1)).findByJugadorIdOrderByFechaInicioDesc(1L);
+        verify(wordRepository, times(1)).findRandomWord();
+        verify(gameInProgressRepository, times(1)).save(any(GameInProgress.class));
+        verify(wordRepository, times(1)).save(any(Word.class));
+        assertTrue(word.getUtilizada());
     }
 
     @Test
